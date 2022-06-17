@@ -1,28 +1,9 @@
 {
   "ast": [
     {
-      "palabraReservada": "void",
-      "identificador": "miMetodo",
-      "parentesisIzquierdo": "(",
-      "parametros": 6,
-      "parentesisDerecho": ")",
-      "llaveIzquierda": "{",
-      "llaveDerecha": "}"
-    },
-    {
-      "constante": "const",
-      "tipo": "int",
+      "tipo": "ide",
       "identificadores": [
-        "asdf"
-      ],
-      "igual": "=",
-      "valor": "9",
-      "puntoComa": ";"
-    },
-    {
-      "tipo": "int",
-      "identificadores": [
-        "asdf"
+        "miIde"
       ],
       "igual": "=",
       "valor": "9",
@@ -33,17 +14,9 @@
   "erroresSintacticos": [],
   "tablaVariables": [
     {
-      "tipo": "int",
+      "tipo": "ide",
       "identificadores": [
-        "asdf"
-      ],
-      "linea": 1
-    },
-    {
-      "constante": "const",
-      "tipo": "int",
-      "identificadores": [
-        "asdf"
+        "miIde"
       ],
       "linea": 3
     }
