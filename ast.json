@@ -1,79 +1,38 @@
 {
-  "ast": [
+  "ast": null,
+  "erroresLexicos": [
     {
-      "tipo": "int",
-      "identificadores": [
-        "hola"
-      ],
-      "puntoComa": ";"
+      "lexico": "$",
+      "linea": 1,
+      "columna": 0
     },
     {
-      "tipo": "ide",
-      "identificador": "miIde",
-      "parentesisIzquierdo": "(",
-      "parentesisDerecho": ")",
-      "llaveIzquierda": "{",
-      "sentencias": [
-        {
-          "palabraReservada": "if",
-          "parentesisIzquierdo": "(",
-          "condicion": {
-            "condicion": {
-              "operador": [
-                "++",
-                "a"
-              ],
-              "simbolo": ">",
-              "operador2": "b"
-            },
-            "simbolo": "&&",
-            "condicion2": {
-              "condicion": {
-                "operador": "b",
-                "simbolo": "<",
-                "operador2": {
-                  "parentesisIzquierdo": "(",
-                  "expresion": {
-                    "operador": "a",
-                    "signo": "-",
-                    "operador2": "2"
-                  },
-                  "parentesisDerecho": ")"
-                }
-              },
-              "simbolo": "&&",
-              "condicion2": {
-                "condicion": {
-                  "operador": "b",
-                  "simbolo": ">",
-                  "operador2": "z"
-                },
-                "simbolo": "||",
-                "condicion2": {
-                  "operador": "a",
-                  "simbolo": "==",
-                  "operador2": "b"
-                }
-              }
-            }
-          },
-          "parentesisDerecho": ")",
-          "llaveIzquierda": "{",
-          "llaveDerecha": "}"
-        }
-      ],
-      "llaveDerecha": "}"
+      "lexico": "|",
+      "linea": 15,
+      "columna": 0
+    },
+    {
+      "lexico": "¡",
+      "linea": 24,
+      "columna": 0
     }
   ],
-  "erroresLexicos": [],
-  "erroresSintacticos": [],
-  "tablaVariables": [
+  "erroresSintacticos": [
     {
-      "tipo": "int",
-      "identificadores": [
-        "hola"
-      ],
-      "linea": 18
+      "sintactico": "}",
+      "linea": 13,
+      "columna": 1
+    },
+    {
+      "sintactico": "}",
+      "linea": 14,
+      "columna": 0
+    },
+    {
+      "sintactico": ";",
+      "linea": 23,
+      "columna": 14
     }
-  ]
+  ],
+  "tablaVariables": null
 }

@@ -83,6 +83,12 @@ true|false              {console.log('booleando'); return 'BOOLEANO';}
 
 %{
 
+    yy = { };
+yy.parseError = function(msg, hash) {
+     doSomething();
+}
+parser.yy = yy;
+
     const sentenciasAPI = require('./sentencias').sentenciasAPI;
 
     let htmlRecolectado = "";
@@ -115,12 +121,73 @@ inicio : sentencias_iniciales EOF {
     tablaVariables = [];
 
     if(aux2.length || aux3.length){
-        return {"html":aux,"ast":null,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":null};
+        return {"ast":null,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":null};
     }
 
        return {"ast":$1,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":aux4};    
-        return $1 
     }
+    | error '\n' { 
+
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+        
+        var aux2 = tablaErroresLexicos;
+        var aux3 = tablaErroresSintacticos;
+        var aux4 = tablaVariables;
+        htmlRecolectado = "";
+        tablaErroresLexicos = [];
+        tablaErroresSintacticos = [];
+        tablaVariables = [];
+
+        if(aux2.length || aux3.length){
+            return {"ast":null,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":null};
+        }
+
+       return {"ast":$1,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":aux4};
+
+
+
+    }
+    | error R_PUNTOCOMA
+        {
+
+        
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+    
+        var aux2 = tablaErroresLexicos;
+        var aux3 = tablaErroresSintacticos;
+        var aux4 = tablaVariables;
+        htmlRecolectado = "";
+        tablaErroresLexicos = [];
+        tablaErroresSintacticos = [];
+        tablaVariables = [];
+
+        if(aux2.length || aux3.length){
+            return {"ast":null,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":null};
+        }
+
+       return {"ast":$1,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":aux4};    
+    }
+    | error EOF {
+
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+    
+        var aux2 = tablaErroresLexicos;
+        var aux3 = tablaErroresSintacticos;
+        var aux4 = tablaVariables;
+        htmlRecolectado = "";
+        tablaErroresLexicos = [];
+        tablaErroresSintacticos = [];
+        tablaVariables = [];
+
+        if(aux2.length || aux3.length){
+            return {"ast":null,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":null};
+        }
+
+       return {"ast":$1,"erroresLexicos":aux2,"erroresSintacticos":aux3,"tablaVariables":aux4};    
+    }
+    
 ;
 
 sentencias_iniciales : 
@@ -132,6 +199,22 @@ sentencias_iniciales :
     |declaracion {$$ = [$1];}
     |metodo {$$ = [$1];}
     |funcion {$$ = [$1];}
+    | error R_PUNTOCOMA  { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error '\n' { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error R_LDER { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    
 ;
 
 lista_id : IDENTIFICADOR R_COMA lista_id { $3.push($1); $3.push($2); $$ = $3 ;} 
@@ -230,6 +313,21 @@ sentencias_metodos_funciones
     |sentencia_imprimir_ln { $$ = [$1]; }
     |sentencia_tipo_de { $$ = [$1]; }
     |sentencia_return { $$ = [$1]; }
+    | error R_PUNTOCOMA  { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error '\n' { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error R_LDER { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
 ;
 
 expresion
@@ -242,7 +340,11 @@ expresion
     |R_PIZ expresion R_PDER { $$ = sentenciasAPI.expresionParentesis($1,$2,$3); } 
     |valor { $$ = $1;}
     |expresion { $$ = $1;}
+    |R_PIZ error R_PDER { 
 
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }   
 ;
 
 valor: R_AUMENTO IDENTIFICADOR { $$ = [$1,$2]}
@@ -319,6 +421,21 @@ sentencias_switch: declaracion sentencias_switch { $2.push($1); $$ = $2; }
                  |sentencia_tipo_de { $$ = [$1]; }
                  |sentencia_return { $$ = [$1]; }
                  |sentencia_break { $$ = [$1]; }
+                 | error R_PUNTOCOMA  { 
+
+                    tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+                    }
+                | error '\n' { 
+
+                    tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+                    }
+                | error R_LDER { 
+
+                    tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+                    }
 ;
 
 sentencia_for :R_FOR R_PIZ declaracion R_DOSPUNTOS condiciones R_DOSPUNTOS expresion R_PDER R_LIZ sentencias_ciclos R_LDER { $$ = sentenciasAPI.cicloFor($1,$2,$3,null,$4,$5,$6,$7,$8,$9,$10,$11); }
@@ -386,6 +503,21 @@ sentencias_ciclos
     |sentencia_return { $$ = [$1]; }
     |sentencia_break { $$ = [$1]; }
     |sentencia_continue { $$ = [$1]; }
+    | error R_PUNTOCOMA  { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error '\n' { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
+    | error R_LDER { 
+
+        tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
 ;
 
 condiciones: condicion R_YCONDICIONAL condiciones { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
@@ -394,6 +526,11 @@ condiciones: condicion R_YCONDICIONAL condiciones { $$ = sentenciasAPI.condicion
            |R_NEGADO condiciones { $$ = sentenciasAPI.condicionesNegacion($1,$2); }
            |R_PIZ condiciones R_PDER { $$ = sentenciasAPI.condicionesParentesis($1,$2,$3); }
            |condicion { $$ =  $1; }
+           |R_PIZ error R_PDER { 
+
+                tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+            }
 ;
 
 condicion: expresion R_MAYORIGUAL expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
@@ -403,4 +540,9 @@ condicion: expresion R_MAYORIGUAL expresion { $$ = sentenciasAPI.condicionCompar
         |expresion R_IGUALCOMPARATIVO expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
         |expresion R_NOIGUAL expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
         |R_NEGADO expresion { $$ = sentenciasAPI.condicionNegada($1,$2); }
+        |R_PIZ error R_PDER { 
+
+            tablaErroresSintacticos.push({'sintactico':yytext,'linea':this._$.first_line,'columna':this._$.first_column});  
+
+        }
 ;

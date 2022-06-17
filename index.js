@@ -56,6 +56,9 @@ app.post('/ast', (req,res) =>
 
         ast = parser.parse(entrada.toString());
 
+        console.log('paso');
+        console.log(ast);
+
        /*if(ast['ast'] != "}"){
             if(ast['ast'] != null){
                 
