@@ -195,6 +195,10 @@ funcion
     |tipo_dato IDENTIFICADOR R_PIZ R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,$6,$7); }
     |tipo_dato IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,$4,$5,$6,null,$7); }
     |tipo_dato IDENTIFICADOR R_PIZ R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,null,$6); }
+    |IDENTIFICADOR IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,$4,$5,$6,$7,$8); }
+    |IDENTIFICADOR IDENTIFICADOR R_PIZ R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,$6,$7); }
+    |IDENTIFICADOR IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,$4,$5,$6,null,$7); }
+    |IDENTIFICADOR IDENTIFICADOR R_PIZ R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,null,$6); }
 ;
 
 parametros
@@ -384,9 +388,9 @@ sentencias_ciclos
     |sentencia_continue { $$ = [$1]; }
 ;
 
-condiciones: condicion R_YCONDICIONAL condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
-           |condicion R_OCONDICIONAL condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
-           |condicion R_XOR condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+condiciones: condicion R_YCONDICIONAL condiciones { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+           |condicion R_OCONDICIONAL condiciones { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+           |condicion R_XOR condiciones { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
            |R_NEGADO condiciones { $$ = sentenciasAPI.condicionesNegacion($1,$2); }
            |R_PIZ condiciones R_PDER { $$ = sentenciasAPI.condicionesParentesis($1,$2,$3); }
            |condicion { $$ =  $1; }

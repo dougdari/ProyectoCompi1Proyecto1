@@ -1,24 +1,79 @@
 {
   "ast": [
     {
-      "tipo": "ide",
+      "tipo": "int",
       "identificadores": [
-        "miIde"
+        "hola"
       ],
-      "igual": "=",
-      "valor": "9",
       "puntoComa": ";"
+    },
+    {
+      "tipo": "ide",
+      "identificador": "miIde",
+      "parentesisIzquierdo": "(",
+      "parentesisDerecho": ")",
+      "llaveIzquierda": "{",
+      "sentencias": [
+        {
+          "palabraReservada": "if",
+          "parentesisIzquierdo": "(",
+          "condicion": {
+            "condicion": {
+              "operador": [
+                "++",
+                "a"
+              ],
+              "simbolo": ">",
+              "operador2": "b"
+            },
+            "simbolo": "&&",
+            "condicion2": {
+              "condicion": {
+                "operador": "b",
+                "simbolo": "<",
+                "operador2": {
+                  "parentesisIzquierdo": "(",
+                  "expresion": {
+                    "operador": "a",
+                    "signo": "-",
+                    "operador2": "2"
+                  },
+                  "parentesisDerecho": ")"
+                }
+              },
+              "simbolo": "&&",
+              "condicion2": {
+                "condicion": {
+                  "operador": "b",
+                  "simbolo": ">",
+                  "operador2": "z"
+                },
+                "simbolo": "||",
+                "condicion2": {
+                  "operador": "a",
+                  "simbolo": "==",
+                  "operador2": "b"
+                }
+              }
+            }
+          },
+          "parentesisDerecho": ")",
+          "llaveIzquierda": "{",
+          "llaveDerecha": "}"
+        }
+      ],
+      "llaveDerecha": "}"
     }
   ],
   "erroresLexicos": [],
   "erroresSintacticos": [],
   "tablaVariables": [
     {
-      "tipo": "ide",
+      "tipo": "int",
       "identificadores": [
-        "miIde"
+        "hola"
       ],
-      "linea": 3
+      "linea": 18
     }
   ]
 }
