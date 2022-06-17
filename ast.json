@@ -1,0 +1,51 @@
+{
+  "ast": [
+    {
+      "palabraReservada": "void",
+      "identificador": "miMetodo",
+      "parentesisIzquierdo": "(",
+      "parametros": 6,
+      "parentesisDerecho": ")",
+      "llaveIzquierda": "{",
+      "llaveDerecha": "}"
+    },
+    {
+      "constante": "const",
+      "tipo": "int",
+      "identificadores": [
+        "asdf"
+      ],
+      "igual": "=",
+      "valor": "9",
+      "puntoComa": ";"
+    },
+    {
+      "tipo": "int",
+      "identificadores": [
+        "asdf"
+      ],
+      "igual": "=",
+      "valor": "9",
+      "puntoComa": ";"
+    }
+  ],
+  "erroresLexicos": [],
+  "erroresSintacticos": [],
+  "tablaVariables": [
+    {
+      "tipo": "int",
+      "identificadores": [
+        "asdf"
+      ],
+      "linea": 1
+    },
+    {
+      "constante": "const",
+      "tipo": "int",
+      "identificadores": [
+        "asdf"
+      ],
+      "linea": 3
+    }
+  ]
+}

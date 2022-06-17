@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Lenguaje LFScript</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
+    <link rel="stylesheet" href="font-awesome-4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="slick/slick-theme.css" />
+    <link rel="stylesheet" href="css/tooplate-style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        var renderPage = true;
+
+        if (navigator.userAgent.indexOf('MSIE') !== -1
+            || navigator.appVersion.indexOf('Trident/') > 0) {
+            /* Microsoft Internet Explorer detected in. */
+            alert("Please view this in a modern browser such as Chrome or Microsoft Edge.");
+            renderPage = false;
+        }
+    </script>
+
+</head>
+
+<body>
+    <!-- Loader -->
+    <div id="loader-wrapper">
+        <div id="loader"></div>
+        <div class="loader-section section-left"></div>
+        <div class="loader-section section-right"></div>
+    </div>
+    <div class="container" style="padding: 0px;">
+        <section class="tm-section-head" style="padding: 10px" id="top">
+            <header id="header" class="text-center tm-text-gray">
+                <h3>LFScript</h3>
+            </header>
+            
+            <div class="dropdown" style="display: inline-flex;">
+                <button class="btn btn-secondary dropdown-toggle" style="color: aliceblue; background-color: rgb(110, 15, 15);" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Acciones
+                </button>
+                <button id="boton_ejecutar" onclick="ejectuarAnalisis2()" class="my_action_btns btn" style="margin-left: 10px; color: aliceblue; background-color: rgb(110, 15, 15);">Ejecutar</button>
+                <button id="boton_reportes" onclick="" class="my_action_btns btn" style="margin-left: 10px; color: aliceblue; background-color: rgb(110, 15, 15);">Generar reportes</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" onclick="nuevaTab()" href="#">Nueva entrada</a>
+                    <a class="dropdown-item" href="#">Guardar entrada</a>
+                </div>
+            </div> 
+        </section>
+
+        <section class="tm-section-4 tm-section-mnb">
+            <div class="row">
+            </div>
+        </section>
+
+
+        <section class="row" style="margin: 0px 0px 0px 0px !important;">
+            <div style="min-width: 50%; max-width: 50%; min-height: 500px; display: inline-flex;">
+
+
+                <div role="tabpanel" style="width: 100%;">
+
+                    <ul id="lista_tabs" class="nav nav-tabs" style="overflow-x: auto;
+                    overflow-y:hidden;
+                    flex-wrap: nowrap;" role="tablist">
+
+                        <li style="white-space: nowrap !important; display:inline-block !important; " role="presentation" class="active">
+                            <a href="#entrada_1" style="padding-right: 5px !important; white-space: nowrap; display: inline-block;" aria-controls="entrada_1" data-toggle="tab" role="tab">Entrada 1 <span style="margin-left: 10px !important;" class="close">×</span> </a>
+                        </li>                  
+                    </ul>
+                    <div id="divs_tabs"  class="tab-content">
+
+                        <div role="tabpanel" class="tab-pane active" id="entrada_1">
+                            <textarea style="max-width: 100%; min-height: 500px; display: inline-flex;" id="entrada" name="entrada"
+                            class="form-control" placeholder="Entrada" spellcheck="false" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>            
+            <textarea style="max-width: 50%; min-height: 500px; display: inline-flex;" id="salida" name="salida"
+                class="form-control" placeholder="Salida" readonly></textarea>
+        </section>
+
+        <section class="tm-section-4 tm-section-mnb">
+            <div class="row">
+
+            </div>
+        </section>
+
+        <section class="row" id="" >
+            <div style="width: 100%;" id="tabla_variables" >
+
+            </div>
+        </section>
+
+        <section class="tm-section-4 tm-section-mnb">
+            <div class="row">
+
+            </div>
+        </section>
+
+        <section class="tm-section-4 tm-section-mnb">
+            <div class="row">
+            </div>
+        </section>
+        <section class="row" style="margin: 0px 0px 0px 0px !important;">
+
+            <textarea style="max-width: 50%; min-height: 500px; display: inline-flex;" id="lexemas" name="LEXEMAS"
+                class="form-control" placeholder="LEXEMAS" readonly></textarea>
+            <textarea style="max-width: 50%; min-height: 500px; display: inline-flex;" id="ast" name="AST"
+                class="form-control" placeholder="AST" readonly></textarea>
+        </section>
+        
+
+        <section class="tm-section-4 tm-section-mnb">
+            <div class="row">
+
+            </div>
+        </section>
+
+        <footer class="mt-5">
+            <p class="text-center">Copyright © 2022 Douglas Rivera - Design: Tooplate</p>
+        </footer>
+
+        
+    </div>
+
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="slick/slick.min.js"></script>
+    <script src="js/funcionalidades.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            if (renderPage) {
+                $('body').addClass('loaded');
+            }
+
+            $('.my_action_btns').click(function () {
+                $('.my_action_btns').trigger('blur');
+            });
+
+            var textareas = document.getElementsByTagName('textarea');
+            var count = textareas.length;
+            for(var i=0;i<count;i++){
+                textareas[i].onkeydown = function(e){
+                    if(e.keyCode==9 || e.which==9){
+                        e.preventDefault();
+                        var s = this.selectionStart;
+                        this.value = this.value.substring(0,this.selectionStart) + "\t" + this.value.substring(this.selectionEnd);
+                        this.selectionEnd = s+1; 
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

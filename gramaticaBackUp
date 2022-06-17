@@ -1,0 +1,349 @@
+
+%lex
+
+%options case-insensitive
+
+%%
+
+\s+											
+"//".*										
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]			
+
+"int"               return 'R_INT';
+"double"            return 'R_DOUBLE';
+"char"              return 'R_CHAR';
+"boolean"           return 'R_BOOLEAN';    
+"String"            return 'R_STRING';
+"true"              return 'R_TRUE';
+"false"             return 'R_FALSE';    
+"const"             return 'R_CONST';    
+"if"                return 'R_IF';    
+"else"              return 'R_ELSE';
+"switch"            return 'R_SWITCH';
+"case"              return 'R_CASE';    
+"break"             return 'R_BREAK';    
+"default"           return 'R_DEFAULT';
+"for"               return 'R_FOR';    
+"while"             return 'R_WHILE';    
+"do"                return 'R_DO';
+"continue"          return 'R_CONTINUE';    
+"void"              return 'R_VOID';
+"return"            return 'R_RETURN';    
+"call"              return 'R_CALL';    
+"null"              return 'R_NULL';    
+"println"           return 'R_PRINTLN';    
+"print"             return 'R_PRINT';    
+"typeof"            return 'R_TYPEOF';
+
+"("                 return 'R_PIZ';
+")"                 return 'R_PDER';
+"{"                 return 'R_LIZ';
+"}"                 return 'R_LDER';    
+"++"                return 'R_AUMENTO';    
+"--"                return 'R_DECREMENTO';    
+"**"                return 'R_POTENCIA';
+"=="                return 'R_IGUALCOMPARATIVO';
+">="                return 'R_MAYORIGUAL';
+"<="                return 'R_MENORIGUAL';
+"!="                return 'R_NOIGUAL';
+"||"                return 'R_OCONDICIONAL';
+"&&"                return 'R_YCONDICIONAL';    
+"+"                 return 'R_SUMA';
+"-"                 return 'R_RESTA';
+"*"                 return 'R_POR';
+"/"                 return 'R_DIVISION';
+"%"                 return 'R_MODULO';
+">"                 return 'R_MAYOR';
+"<"                 return 'R_MENOR';
+"^"                 return 'R_XOR';
+"!"                 return 'R_NEGADO';
+":"                 return 'R_DOSPUNTOS';
+";"                 return 'R_PUNTOCOMA';
+","                 return 'R_COMA';
+"="                 return 'R_IGUAL_ASIG';
+
+
+[0-9]+("."[0-9]+)?\b  	return 'DECIMAL';
+[0-9]+\b				return 'ENTERO';
+(
+[^\"]                   return 'CARACTER';
+\"[^\"]*\"				{ yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
+[a-zA-Z])[a-zA-Z0-9_]*	return 'IDENTIFICADOR';
+
+<<EOF>>				return 'EOF';
+
+.					{ console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
+
+
+/lex
+
+%{
+
+
+
+%}
+
+%left 'R_SUMA' 'R_RESTA'
+%left 'R_POR' 'R_DIVISION'
+
+%left 'R_YCONDICIONAL' 'R_OCONDICIONAL'
+%left 'R_MAYORIGUAL' 'R_MENORIGUAL' 'R_MENOR' 'R_MAYOR' 'R_IGUALCOMPARATIVO' 'R_NOIGUAL' 'R_XOR'
+
+%start inicio 
+
+%%
+
+
+
+inicio : sentencias_iniciales EOF {return $1 }
+;
+
+sentencias_iniciales : declaracion sentencias_iniciales {$2.push($1); $$ = $2; }
+    |asignacion sentencias_iniciales {$2.push($1); $$ = $2; }
+    |metodo sentencias_iniciales {$2.push($1); $$ = $2; }
+    |funcion sentencias_iniciales {$2.push($1); $$ = $2; }
+    |declaracion {$$ = [$1];}
+    |asignacion {$$ = [$1];}
+    |metodo {$$ = [$1];}
+    |funcion {$$ = [$1];}
+;
+
+lista_id : IDENTIFICADOR R_COMA lista_id { $3.push($1); $3.push($2); $$ = $3 ;} 
+    |IDENTIFICADOR { $$ = [$1]; }
+;
+
+declaracion : R_CONST tipo_dato lista_id R_IGUAL_ASIG expresion R_DOSPUNTOS  {$$=sentenciasApi.declaracionConstanteConAsignacion($1,$2,$3,$4,$5,$6);}
+    |tipo_dato lista_id R_IGUAL_ASIG expresion R_DOSPUNTOS {$$=sentenciasApi.declaracionAsignacion($1,$2,$3,$4,$5);}
+    |R_CONST tipo_dato lista_id R_DOSPUNTOS {$$=sentenciasApi.declaracionConstanteSimple($1,$2,$3,$4);}
+    |tipo_dato lista_id R_DOSPUNTOS {$$=sentenciasApi.declaracion($1,$2,$3);}
+;
+
+tipo_dato : R_INT { $$ = $1; }
+    |R_DOUBLE { $$ = $1; }
+    |R_CHAR { $$ = $1; }
+    |R_BOOLEAN { $$ = $1; }
+    |R_STRING { $$ = $1; }
+;
+
+asignacion : lista_id R_IGUAL_ASIG expresion R_PUNTOCOMA { $$ = sentenciasAPI.asignacion($1,$2,$3,$4); }
+;
+
+metodo 
+    :R_VOID IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.metodo($1,$2,$3,$4,$5,$6,$7,$8); }
+    |R_VOID IDENTIFICADOR R_PIZ R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.metodo($1,$2,$3,null,$4,$5,$6,$7); }
+    |R_VOID IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.metodo($1,$2,$3,$4,$5,$6,null,$7); }
+    |R_VOID IDENTIFICADOR R_PIZ R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.metodo($1,$2,$3,null,$4,$5,null,$6); }
+;
+
+tipo_funcion : tipo_dato { $$ = $1; }
+    |IDENTIFICADOR { $$ = $1; }
+;
+
+funcion
+    :tipo_funcion IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,$4,$5,$6,$7,$8); }
+    |tipo_funcion IDENTIFICADOR R_PIZ R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,$6,$7); }
+    |tipo_funcion IDENTIFICADOR R_PIZ parametros R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,$4,$5,$6,null,$7); }
+    |tipo_funcion IDENTIFICADOR R_PIZ R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.funcion($1,$2,$3,null,$4,$5,null,$6); }
+;
+
+
+parametros
+    :tipo_funcion IDENTIFICADOR R_COMA parametros { $4.push($1); $4.push($2); $4.push($3); $$ = $4; }
+    |tipo_funcion IDENTIFICADOR { $$ = [$1,$2];}
+;
+
+sentencias_metodos_funciones
+    : declaracion sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |asignacion sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |control_if sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |control_switch sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_for sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_while sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_do_while sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_imprimir sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_imprimir_ln sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencia_tipo_de sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |sentencias_return sentencias_metodos_funciones { $2.push($1); $$ = $2; }
+    |declaracion { $$ = [$1]; }
+    |asignacion { $$ = [$1]; }
+    |control_if { $$ = [$1]; }
+    |control_switch { $$ = [$1]; }
+    |sentencia_for { $$ = [$1]; }
+    |sentencia_while { $$ = [$1]; }
+    |sentencia_do_while { $$ = [$1]; }
+    |sentencia_imprimir { $$ = [$1]; }
+    |sentencia_imprimir_ln { $$ = [$1]; }
+    |sentencia_tipo_de { $$ = [$1]; }
+    |sentencia_return { $$ = [$1]; }
+;
+
+control_if 
+    :if { $$ = $1; }
+    |if control_else_if { $$ = [$1,$2]; }
+;
+
+control_else_if
+    :else_if control_else_if { $2.push($1); $$ = $2; }
+    |else_if { $$ = [$1]; }
+    |else { $$ = [$1]; }
+;
+
+if :R_IF R_PIZ condiciones R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.ifSimple($1,$2,$3,$4,$5,$6,$7); }
+   |R_IF R_PIZ condiciones R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.ifSimple($1,$2,$3,$4,$5,null,$6); }
+;
+
+else_if :R_ELSE R_IF R_PIZ condiciones R_PDER R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.elseIfSimple($1,$2,$3,$4,$5,$6,$7,$8); }
+        |R_ELSE R_IF R_PIZ condiciones R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.elseIfSimple($1,$2,$3,$4,$5,$6,null,$7); }
+;
+
+else :R_ELSE R_LIZ sentencias_metodos_funciones R_LDER { $$ = sentenciasAPI.elseSimple($1,$2,$3,$4); }
+     |R_ELSE R_LIZ R_LDER  { $$ = sentenciasAPI.elseSimple($1,$2,null,$3); }
+;
+
+
+control_switch
+    :R_SWITCH R_LIZ expresion R_PDER R_LIZ lista_casos R_LDER { $$ = sentenciasAPI.controlSwitch($1,$2,$3,$4,$5,$6,$7); }
+    |R_SWITCH R_LIZ expresion R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.controlSwitch($1,$2,$3,$4,$5,null,$6); }
+;
+
+lista_casos 
+    :R_CASE expresion R_DOSPUNTOS sentencias_switch sentencia_break lista_casos { $6.push(sentenciasAPI.casoSimple($1,$2,$3,$4,$5)); $$ = $6; }
+    |R_CASE expresion R_DOSPUNTOS sentencias_switch lista_casos { $5.push(sentenciasAPI.casoSimple($1,$2,$3,$4,null)); $$ = $5 }
+    |R_CASE expresion R_DOSPUNTOS sentencias_switch sentencia_break { $$ = sentenciasAPI.casoSimple($1,$2,$3,$4,$5); }
+    |R_CASE expresion R_DOSPUNTOS sentencias_switch { $$ = sentenciasAPI.casoSimple($1,$2,$3,$4,null); }
+    |R_DEFAULT R_DOSPUNTOS sentencias_switch { $$ = sentenciasAPI.defaultSimple($1,$2,$3); }
+;
+
+sentencias_switch: declaracion sentencias_switch { $2.push($1); $$ = $2; }
+                 |asignacion sentencias_switch { $2.push($1); $$ = $2; }
+                 |control_if sentencias_switch { $2.push($1); $$ = $2; }
+                 |control_switch sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_for sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_while sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_do_while sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_imprimir sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_imprimir_ln sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_tipo_de sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_return sentencias_switch { $2.push($1); $$ = $2; }
+                 |sentencia_break sentencias_switch { $2.push($1); $$ = $2; }
+                 |declaracion { $$ = [$1]; }
+                 |asignacion { $$ = [$1]; }
+                 |control_if { $$ = [$1]; }
+                 |control_switch { $$ = [$1]; }
+                 |sentencia_for { $$ = [$1]; }
+                 |sentencia_while { $$ = [$1]; }
+                 |sentencia_do_while { $$ = [$1]; }
+                 |sentencia_imprimir { $$ = [$1]; }
+                 |sentencia_imprimir_ln { $$ = [$1]; }
+                 |sentencia_tipo_de { $$ = [$1]; }
+                 |sentencia_return { $$ = [$1]; }
+                 |sentencia_break { $$ = [$1]; }
+;
+
+sentencia_for :R_FOR R_PIZ declaracion R_DOSPUNTOS condiciones R_DOSPUNTOS expresion R_PDER R_LIZ sentencias_ciclos R_LDER { $$ = sentenciasAPI.cicloFor($1,$2,$3,null,$4,$5,$6,$7,$8,$9,$10,$11); }
+              |R_FOR R_PIZ asignacion R_DOSPUNTOS condiciones R_DOSPUNTOS expresion R_PDER R_LIZ sentencias_ciclos R_LDER { $$ = sentenciasAPI.cicloFor($1,$2,null,$3,$4,$5,$6,$7,$8,$9,$10,$11); }
+              |R_FOR R_PIZ declaracion R_DOSPUNTOS condiciones R_DOSPUNTOS expresion R_PDER R_LIZ  R_LDER { $$ = sentenciasAPI.cicloFor($1,$2,$3,null,$4,$5,$6,$7,$8,$9,null,$10); }
+              |R_FOR R_PIZ asignacion R_DOSPUNTOS condiciones R_DOSPUNTOS expresion R_PDER R_LIZ  R_LDER { $$ = sentenciasAPI.cicloFor($1,$2,null,$3,$4,$5,$6,$7,$8,$9,null,$10); }
+;
+
+sentencia_while: R_WHILE R_PIZ condiciones R_PDER R_LIZ sentencias_ciclos R_LDER { $$ = sentenciasAPI.cicloWhile($1,$2,$3,$4,$5,$6,$7); }
+               |R_WHILE R_PIZ condiciones R_PDER R_LIZ R_LDER { $$ = sentenciasAPI.cicloWhile($1,$2,$3,$4,$5,null,$6); }
+;
+
+sentencia_do_while: R_DO R_LIZ sentencias_ciclos R_LDER R_WHILE R_PIZ condiciones R_PDER { $$ = sentenciasAPI.cicloDoWhile($1,$2,$3,$4,$5,$6,$7,$8); }
+                  |R_DO R_LIZ R_LDER R_WHILE R_PIZ condiciones R_PDER { $$ = sentenciasAPI.cicloDoWhile($1,$2,$3,$4,$5,$6,null,$7); }
+;
+
+sentencia_imprimir :R_PRINT R_PIZ expresion R_PDER R_PUNTOCOMA { $$ = sentenciasAPI.sentenciaImprimir($1,$2,$3,$4,$5); }
+;
+
+sentencia_imprimir_ln :R_PRINT R_PIZ expresion R_PDER R_PUNTOCOMA { $$ = sentenciasAPI.sentenciaImprimir($1,$2,$3,$4,$5); }
+;
+
+sentencia_return: R_RETURN R_PUNTOCOMA { $$ = sentenciasAPI.sentenciaReturn($1,$2); }
+;
+
+sentencia_return_funcion: R_RETURN expresion R_PUNTOCOMA { $$ = sentenciasAPI.returnFuncion($1,$2,$3); }
+;
+
+sentencia_tipo_de :R_TYPEOF R_PIZ expresion R_PDER R_PUNTOCOMA{ $$ = sentenciasAPI.returnFuncion($1,$2,$3,$4,$5); }
+                  |R_TYPEOF R_PIZ expresion R_PDER { $$ = sentenciasAPI.returnFuncion($1,$2,$3,$4); }
+;
+
+sentencia_break 
+    :R_BREAK R_PUNTOCOMA { $$ = sentenciasAPI.sentenciaBreak($1,$2); }
+;
+
+sentencia_continue
+    :R_CONTINUE R_PUNTOCOMA { $$ = sentenciasAPI.sentenciaContinue($1,$2); }
+;
+
+sentencias_ciclos
+    :declaracion sentencias_ciclos { $2.push($1); $$ = $2; }
+    |asignacion sentencias_ciclos { $2.push($1); $$ = $2; }
+    |control_if sentencias_ciclos { $2.push($1); $$ = $2; }
+    |control_switch sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_for sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_while sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_do_while sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_imprimir sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_imprimir_ln sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_tipo_de sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_return sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_break sentencias_ciclos { $2.push($1); $$ = $2; }
+    |sentencia_continue sentencias_ciclos { $2.push($1); $$ = $2; }
+    |declaracion { $$ = [$1]; }
+    |asignacion { $$ = [$1]; }
+    |control_if { $$ = [$1]; }
+    |control_switch { $$ = [$1]; }
+    |sentencia_for { $$ = [$1]; }
+    |sentencia_while { $$ = [$1]; }
+    |sentencia_do_while { $$ = [$1]; }
+    |sentencia_imprimir { $$ = [$1]; }
+    |sentencia_imprimir_ln { $$ = [$1]; }
+    |sentencia_tipo_de { $$ = [$1]; }
+    |sentencia_return { $$ = [$1]; }
+    |sentencia_break { $$ = [$1]; }
+    |sentencia_continue { $$ = [$1]; }
+;
+
+condiciones: condicion R_YCONDICIONAL condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+           |condicion R_OCONDICIONAL condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+           |condicion R_XOR condicion { $$ = sentenciasAPI.condicionesOperacion($1,$2,$3); }
+           |R_NEGADO condiciones { $$ = sentenciasAPI.condicionesNegacion($1,$2); }
+           |R_PIZ condiciones R_PDER { $$ = sentenciasAPI.condicionesParentesis($1,$2,$3); }
+           |condicion { $$ =  $1; }
+;
+
+condicion: expresion R_MAYORIGUAL expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
+        |expresion R_MENORIGUAL expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
+        |expresion R_MAYOR expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
+        |expresion R_MENOR expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }    
+        |expresion R_IGUALCOMPARATIVO expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
+        |expresion R_NOIGUAL expresion { $$ = sentenciasAPI.condicionComparacion($1,$2,$3); }
+        |R_NEGADO expresion { $$ = sentenciasAPI.condicionNegada($1,$2); }
+;
+
+expresion
+    :expresion R_RESTA expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |expresion R_SUMA expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |expresion R_POTENCIA expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |expresion R_DIVISION expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |expresion R_MODULO expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |expresion R_POR expresion { $$ = sentenciasAPI.expresionOperacion($1,$2,$3); }
+    |R_PIZ expresion R_PDER { $$ = sentenciasAPI.expresionParentesis($1,$2,$3); } 
+    |valor { $$ = $1;}
+    |R_AUMENTO valor { $$ = [$1,$2]}
+    |R_DECREMENTO valor { $$ = [$1,$2]}
+    |valor R_AUMENTO { $$ = [$1,$2]}
+    |valor R_DECREMENTO { $$ = [$1,$2]}
+;
+
+valor: ENTERO { $$ = $1; }
+     | DECIMAL { $$ = $1; }
+     | CADENA { $$ = $1; } 
+     | CARACTER { $$ = $1; }
+     | IDENTIFICADOR { $$ = $1; }
+     | R_FALSE { $$ = $1; }
+     | R_TRUE { $$ = $1; }
+;
